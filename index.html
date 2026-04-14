@@ -203,7 +203,7 @@ const SR    = (typeof SpeechRecognition !== 'undefined') ? SpeechRecognition
     const btn = document.createElement('button');
     btn.className = 'dog-card';
     btn.innerHTML = `
-      <div class="dog-avatar" style="background:${dog.color};box-shadow:0 8px 24px ${dog.color}66">${dog.emoji}</div>
+      <div class="dog-avatar" style="background:${dog.color};box-shadow:0 8px 24px ${dog.color}66"><img src="${dog.img}" style="width:100%;height:100%;border-radius:50%;"></div>
       <div class="dog-name">${dog.name}</div>
       <div class="dog-role">${dog.role}</div>`;
     btn.onclick = ()=>startIncoming(id);
@@ -244,7 +244,9 @@ function startIncoming(dogId){
   currentDog = DOGS[dogId]; history=[];
   document.getElementById('incName').textContent=currentDog.name;
   const av=document.getElementById('incAvatar');
-  av.textContent=currentDog.emoji; av.style.background=currentDog.color;
+  av.innerHTML =
+ `<img src="${currentDog.img}" 
+ style="width:100%;height:100%;border-radius:50%;">`; av.style.background=currentDog.color;
   av.style.boxShadow=`0 0 60px ${currentDog.color}99`;
   ['ripple1','ripple2','ripple3'].forEach(id=>document.getElementById(id).style.background=currentDog.color);
   document.getElementById('incBg').style.background=`linear-gradient(180deg,#0f0f1a,${currentDog.color}22,#0f0f1a)`;
@@ -261,7 +263,9 @@ function acceptCall(){
   stopRingtone();
   isSpeaking=false; isBusy=false;
   const sm=document.getElementById('callAvatarSm');
-  sm.textContent=currentDog.emoji; sm.style.background=currentDog.color;
+  sm.innerHTML =
+ `<img src="${currentDog.img}" 
+ style="width:100%;height:100%;border-radius:50%;">`; sm.style.background=currentDog.color;
   document.getElementById('callName').textContent=currentDog.name;
   document.getElementById('screen-call').style.background=`linear-gradient(160deg,#0f0f1a,${currentDog.color}20,#0f0f1a)`;
   document.getElementById('chatArea').innerHTML='';
