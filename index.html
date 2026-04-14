@@ -272,7 +272,22 @@ function acceptCall(){
   setMicUI('disabled');
   showScreen('screen-call');
 
-  const greeting=`Wouf ! Allo Lucia? C'est moi ${currentDog.name} ! Comment tu vas ?`;
+ const dogId =
+  Object.keys(DOGS)
+    .find(key => DOGS[key] === currentDog);
+
+const greetingFile =
+  `sounds/${dogId}/${dogId}_0.mp3`;
+
+const greetingAudio =
+  new Audio(greetingFile);
+
+greetingAudio.onended = ()=>{
+  setMicUI('idle');
+  setStatus('👆 Maintiens le bouton pour parler');
+};
+
+greetingAudio.play();
   history=[{role:'assistant',content:greeting}];
   addBubble(greeting,'dog');
   speakThen(greeting, ()=>{ setMicUI('idle'); setStatus('👆 Maintiens le bouton pour parler'); });
@@ -336,7 +351,81 @@ function speakThen(text, callback){
 
 // ── IA ───────────────────────────────────────────────────────────────────────
 // ── Dialogues prédéterminés enfants ─────────────────────
+const SOUND_FILES = {
 
+  chase: [
+    "sounds/chase/chase_1.mp3",
+    "sounds/chase/chase_2.mp3",
+    "sounds/chase/chase_3.mp3",
+    "sounds/chase/chase_4.mp3",
+    "sounds/chase/chase_5.mp3",
+    "sounds/chase/chase_6.mp3",
+    "sounds/chase/chase_7.mp3",
+    "sounds/chase/chase_8.mp3",
+    "sounds/chase/chase_9.mp3"
+  ],
+
+  stella: [
+    "sounds/stella/stella_1.mp3",
+    "sounds/stella/stella_2.mp3",
+    "sounds/stella/stella_3.mp3",
+    "sounds/stella/stella_4.mp3",
+    "sounds/stella/stella_5.mp3",
+    "sounds/stella/stella_6.mp3",
+    "sounds/stella/stella_7.mp3",
+    "sounds/stella/stella_8.mp3",
+    "sounds/stella/stella_9.mp3"
+  ],
+
+  ruben: [
+    "sounds/ruben/ruben_1.mp3",
+    "sounds/ruben/ruben_2.mp3",
+    "sounds/ruben/ruben_3.mp3",
+    "sounds/ruben/ruben_4.mp3",
+    "sounds/ruben/ruben_5.mp3",
+    "sounds/ruben/ruben_6.mp3",
+    "sounds/ruben/ruben_7.mp3",
+    "sounds/ruben/ruben_8.mp3",
+    "sounds/ruben/ruben_9.mp3"
+  ],
+
+  everest: [
+    "sounds/everest/everest_1.mp3",
+    "sounds/everest/everest_2.mp3",
+    "sounds/everest/everest_3.mp3",
+    "sounds/everest/everest_4.mp3",
+    "sounds/everest/everest_5.mp3",
+    "sounds/everest/everest_6.mp3",
+    "sounds/everest/everest_7.mp3",
+    "sounds/everest/everest_8.mp3",
+    "sounds/everest/everest_9.mp3"
+  ],
+
+  rocky: [
+    "sounds/rocky/rocky_1.mp3",
+    "sounds/rocky/rocky_2.mp3",
+    "sounds/rocky/rocky_3.mp3",
+    "sounds/rocky/rocky_4.mp3",
+    "sounds/rocky/rocky_5.mp3",
+    "sounds/rocky/rocky_6.mp3",
+    "sounds/rocky/rocky_7.mp3",
+    "sounds/rocky/rocky_8.mp3",
+    "sounds/rocky/rocky_9.mp3"
+  ],
+
+  zuma: [
+    "sounds/zuma/zuma_1.mp3",
+    "sounds/zuma/zuma_2.mp3",
+    "sounds/zuma/zuma_3.mp3",
+    "sounds/zuma/zuma_4.mp3",
+    "sounds/zuma/zuma_5.mp3",
+    "sounds/zuma/zuma_6.mp3",
+    "sounds/zuma/zuma_7.mp3",
+    "sounds/zuma/zuma_8.mp3",
+    "sounds/zuma/zuma_9.mp3"
+  ]
+
+};
 const DIALOGUES = {
 
   chase: [
@@ -421,22 +510,25 @@ function askDog(userText){
     // Choisir phrase aléatoire
     const list = DIALOGUES[dogId];
 
-    const reply =
-      list[Math.floor(Math.random()*list.length)];
+    const dogId =
+  Object.keys(DOGS)
+    .find(key => DOGS[key] === currentDog);
 
-    addBubble(reply,'dog');
+const number =
+  Math.floor(Math.random()*9)+1;
 
-    isBusy=false;
+const file =
+  `sounds/${dogId}/${dogId}_${number}.mp3`;
 
-    setStatus(currentDog.name+" parle...");
+const audio =
+  new Audio(file);
 
-    speakThen(reply, ()=>{
-      setMicUI('idle');
-      setStatus('👆 Maintiens le bouton pour parler');
-    });
+audio.onended = ()=>{
+  setMicUI('idle');
+  setStatus('👆 Maintiens le bouton pour parler');
+};
 
-  }, 1000);
-}
+audio.play();
 
 // ── Micro push-to-talk ───────────────────────────────────────────────────────
 function setStatus(txt){ document.getElementById('micStatus').textContent=txt; }
