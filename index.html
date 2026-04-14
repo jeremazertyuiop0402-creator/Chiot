@@ -288,9 +288,7 @@ greetingAudio.onended = ()=>{
 };
 
 greetingAudio.play();
-  history=[{role:'assistant',content:greeting}];
-  addBubble(greeting,'dog');
-  speakThen(greeting, ()=>{ setMicUI('idle'); setStatus('👆 Maintiens le bouton pour parler'); });
+  
 }
 
 function hangup(){
@@ -503,32 +501,34 @@ function askDog(userText){
 
     removeTyping();
 
-    // Trouver le bon chien
-    const dogId = Object.keys(DOGS)
-      .find(key => DOGS[key] === currentDog);
-
-    // Choisir phrase aléatoire
-    const list = DIALOGUES[dogId];
-
+    // Trouver quel chien est actif
     const dogId =
-  Object.keys(DOGS)
-    .find(key => DOGS[key] === currentDog);
+      Object.keys(DOGS)
+        .find(key => DOGS[key] === currentDog);
 
-const number =
-  Math.floor(Math.random()*9)+1;
+    // Choisir un numéro aléatoire (1 à 9)
+    const number =
+      Math.floor(Math.random()*9)+1;
 
-const file =
-  `sounds/${dogId}/${dogId}_${number}.mp3`;
+    // Construire le nom du fichier
+    const file =
+      `sounds/${dogId}/${dogId}_${number}.mp3`;
 
-const audio =
-  new Audio(file);
+    // Jouer le son
+    const audio =
+      new Audio(file);
 
-audio.onended = ()=>{
-  setMicUI('idle');
-  setStatus('👆 Maintiens le bouton pour parler');
-};
+    audio.onended = ()=>{
+      isBusy=false;
+      setMicUI('idle');
+      setStatus('👆 Maintiens le bouton pour parler');
+    };
 
-audio.play();
+    audio.play();
+
+  },1000);
+
+}
 
 // ── Micro push-to-talk ───────────────────────────────────────────────────────
 function setStatus(txt){ document.getElementById('micStatus').textContent=txt; }
