@@ -159,12 +159,12 @@ h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;letter-spacing:1p
 <script>
 // ── Données personnages ──────────────────────────────────────────────────────
 const DOGS = {
-  chase:   {name:"Chase",   img:"images/chase.png",color:"#2563eb",role:"Police",   pitch:1.1, rate:1.3, system:`Tu es Chase, chiot policier courageux. Tu parles à une petite fille de 4 ans prénommée "ma chérie". Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle de ta voiture de patrouille. Sois chaleureux et amusant.`},
-  stella:  {name:"Stella",  img:"images/stella.png",color:"#ec4899",role:"Aérienne", pitch:1.85,rate:1.35,system:`Tu es Stella, chienne rose qui vole. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle du ciel. Sois très douce et joyeuse.`},
-  ruben:   {name:"Ruben",   img:"images/ruben.png",color:"#16a34a",role:"Recyclage",pitch:0.95,rate:1.15, system:`Tu es Ruben, chiot rigolo qui recycle. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Pas de gaspillage !". Sois amusant.`},
-  everest: {name:"Everest", img:"images/everest.png",color:"#7c3aed",role:"Neige",    pitch:1.45,rate:1.05,system:`Tu es Everest, chienne husky de montagne. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" Parle de la neige. Sois calme et douce.`},
-  rocky:   {name:"Rocky",   img:"images/rocky.png",color:"#ea580c",role:"Mécanique",pitch:1.15, rate:1.30,system:`Tu es Rocky, chiot inventeur. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Je peux réparer ça !". Sois malin.`},
-  zuma:    {name:"Zuma",    img:"images/zuma.png",color:"#0891b2",role:"Marine",   pitch:1.65, rate:1.4, system:`Tu es Zuma, chiot qui adore l'eau. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Ça déchire !". Sois très joyeux.`}
+  chase:   {name:"Chase",   img:"images/chase.png",color:"#2563eb",role:"Police",   pitch:0.88, rate:1.32, system:`Tu es Chase, chiot policier courageux. Tu parles à une petite fille de 4 ans prénommée "ma chérie". Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle de ta voiture de patrouille. Sois chaleureux et amusant.`},
+  stella:  {name:"Stella",  img:"images/stella.png",color:"#ec4899",role:"Aérienne", pitch:1.15,rate:1.38,system:`Tu es Stella, chienne rose qui vole. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle du ciel. Sois très douce et joyeuse.`},
+  ruben:   {name:"Ruben",   img:"images/ruben.png",color:"#16a34a",role:"Recyclage",pitch:0.8,rate:1.18, system:`Tu es Ruben, chiot rigolo qui recycle. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Pas de gaspillage !". Sois amusant.`},
+  everest: {name:"Everest", img:"images/everest.png",color:"#7c3aed",role:"Neige",    pitch:1.05,rate:1.10,system:`Tu es Everest, chienne husky de montagne. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" Parle de la neige. Sois calme et douce.`},
+  rocky:   {name:"Rocky",   img:"images/rocky.png",color:"#ea580c",role:"Mécanique",pitch:0.90, rate:1.28,system:`Tu es Rocky, chiot inventeur. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Je peux réparer ça !". Sois malin.`},
+  zuma:    {name:"Zuma",    img:"images/zuma.png",color:"#0891b2",role:"Marine",   pitch:1.20, rate:1.4, system:`Tu es Zuma, chiot qui adore l'eau. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Ça déchire !". Sois très joyeux.`}
 };
 
 // ── État global ──────────────────────────────────────────────────────────────
@@ -272,7 +272,7 @@ function acceptCall(){
   setMicUI('disabled');
   showScreen('screen-call');
 
-  const greeting=`Wouf ! Allo ? C'est moi ${currentDog.name} ! Comment tu vas ?`;
+  const greeting=`Wouf ! Allo Lucia? C'est moi ${currentDog.name} ! Comment tu vas ?`;
   history=[{role:'assistant',content:greeting}];
   addBubble(greeting,'dog');
   speakThen(greeting, ()=>{ setMicUI('idle'); setStatus('👆 Maintiens le bouton pour parler'); });
@@ -345,6 +345,9 @@ const DIALOGUES = {
     "Attention ! Je protège la ville !",
     "Super travail mon amie !",
     "On part sauver quelqu’un ! Wouf !"
+    "Merci on forme une bonne équipe"
+    "Fais Attention"
+    "Atchou!Je suis allergique aux chats"
   ],
 
   stella: [
@@ -353,6 +356,9 @@ const DIALOGUES = {
     "Je vois tout d'en haut !",
     "Tu veux voler avec moi ?",
     "Le ciel est très beau aujourd'hui !"
+    "Tu n'aurais pas vu Ryder ?"
+    "Parer au décollage"
+    "Je compte sur toi"
   ],
 
   ruben: [
@@ -361,14 +367,18 @@ const DIALOGUES = {
     "Regarde ma super poubelle !",
     "On garde la planète propre !",
     "Tu es très forte !"
+    "Lucia, tu peux faire attention que personne ne noys dérange"
+    "Appel Chase on va avoir besoin de son drone"
   ],
 
-  everest: [
+ everest: [
     "Wouf ! J'adore la neige ! ",
     "Je glisse sur la montagne !",
     "Il fait froid ici !",
     "On joue dans la neige ?",
     "Je protège mes amis !"
+    "Allons sauver les ours polaires"
+    "Fais attention ou tu marches la glace est fine"
   ],
 
   rocky: [
@@ -377,6 +387,8 @@ const DIALOGUES = {
     "Je construis une machine !",
     "Tout fonctionne maintenant !",
     "Super idée !"
+    "Tu peux me tenir ça pendant que je repars ceci ?"
+    "On est tous avec toi"
   ],
 
   zuma: [
@@ -385,6 +397,8 @@ const DIALOGUES = {
     "On va sauver quelqu’un dans la mer !",
     "Splash !",
     "Tu es courageuse !"
+    "Vite ! Monte sur mon aéro-glisseur "
+    "Bien joué Lucia"
   ]
 
 };
