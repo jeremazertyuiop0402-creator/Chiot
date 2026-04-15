@@ -8,26 +8,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Java
-      uses: actions/setup-java@v3
+    - name: Setup Node
+      uses: actions/setup-node@v3
       with:
-        distribution: 'temurin'
-        java-version: '17'
+        node-version: 18
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-
-    - name: Create WebView Project
+    - name: Install Capacitor
       run: |
-        mkdir app
-        mkdir app/src
-        mkdir app/src/main
-        mkdir app/src/main/assets
-        cp -r * app/src/main/assets/
+        npm install @capacitor/cli @capacitor/core @capacitor/android
 
-    - name: Create APK
+    - name: Create Capacitor project
       run: |
-        echo "APK build placeholder"
+        npx cap init chiots.app com.chiots.app --web-dir=.
+
+    - name: Add Android platform
+      run: |
+        npx cap add android
+
+    - name: Copy files
+      run: |
+        npx cap copy
+
+    - name: Build APK
+      run: |
+        cd android
+        ./gradlew assembleDebug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-debug
+        path: android/app/build/outputs/apk/debug/app-debug.apk
