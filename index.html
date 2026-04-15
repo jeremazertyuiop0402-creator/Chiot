@@ -147,7 +147,12 @@ h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;letter-spacing:1p
   <div class="chat-area" id="chatArea"></div>
   <div class="controls">
     <div class="mic-status" id="micStatus" style="color:rgba(255,255,255,0.6)">Le chiot arrive...</div>
-  <button class="mic-btn idle" id="micBtn">🎙️</button>
+ <button class="mic-btn idle" id="micBtn"
+  ontouchstart="startMic(event)" 
+  ontouchend="stopMic(event)"
+  onmousedown="startMic(event)" 
+  onmouseup="stopMic(event)"
+  onmouseleave="stopMic(event)">🎙️</button>
     <div class="mic-label" id="micLabel">Maintiens pour parler</div>
     <button class="btn-hangup" id="hangupBtn" onclick="hangup()">📵 Raccrocher</button>
   </div>
@@ -598,32 +603,6 @@ function stopRecognition(){
 
 // Préchargement voix
 if(synth){ try{ synth.onvoiceschanged=()=>synth.getVoices(); synth.getVoices(); }catch(e){} }
-// Gestion tactile fiable pour Android APK
-let micActive = false;
-
-document.addEventListener("DOMContentLoaded", ()=>{
-
-  const btn = document.getElementById("micBtn");
-
-  btn.addEventListener("touchstart", (e)=>{
-
-    e.preventDefault();
-
-    if(micActive){
-
-      stopMic(new Event("stop"));
-      micActive = false;
-
-    }else{
-
-      startMic(new Event("start"));
-      micActive = true;
-
-    }
-
-  });
-
-});
 </script>
 </body>
 </html>
