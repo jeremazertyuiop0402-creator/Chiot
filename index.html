@@ -599,6 +599,7 @@ function stopRecognition(){
 // Préchargement voix
 if(synth){ try{ synth.onvoiceschanged=()=>synth.getVoices(); synth.getVoices(); }catch(e){} }
 // Gestion tactile fiable pour Android APK
+let micActive = false;
 
 document.addEventListener("DOMContentLoaded", ()=>{
 
