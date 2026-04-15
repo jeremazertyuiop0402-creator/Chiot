@@ -1,1 +1,33 @@
+name: Build APK
 
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Create WebView Project
+      run: |
+        mkdir app
+        mkdir app/src
+        mkdir app/src/main
+        mkdir app/src/main/assets
+        cp -r * app/src/main/assets/
+
+    - name: Create APK
+      run: |
+        echo "APK build placeholder"
