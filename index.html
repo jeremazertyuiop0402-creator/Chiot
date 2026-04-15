@@ -19,7 +19,14 @@ html,body{background:#0f0f1a;height:100%;width:100%;overflow:hidden;}
 @keyframes pulseGreen{0%,100%{box-shadow:0 8px 24px rgba(34,197,94,0.4)}50%{box-shadow:0 8px 48px rgba(34,197,94,0.9)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
 @keyframes typingDot{0%,100%{transform:translateY(0);opacity:0.5}50%{transform:translateY(-6px);opacity:1}}
-@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 20px rgba(239,68,68,0)}}
+@keyframes talkPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(99,200,99,0.5);transform:scale(1);}
+  50%{box-shadow:0 0 0 22px rgba(99,200,99,0);transform:scale(1.06);}
+}
+@keyframes waveAnim{
+  0%,100%{height:6px;}
+  50%{height:22px;}
+}
 
 /* SELECTION */
 #screen-select{background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);overflow-y:auto;justify-content:flex-start;padding:28px 16px 36px;}
@@ -78,23 +85,56 @@ h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;letter-spacing:1p
 .typing-dot:nth-child(2){animation:typingDot 1.2s 0.2s ease-in-out infinite}
 .typing-dot:nth-child(3){animation:typingDot 1.2s 0.4s ease-in-out infinite}
 
-.controls{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 20px 36px;position:relative;z-index:2;width:100%;}
+/* ZONE CONTROLES */
+.controls{
+  display:flex;flex-direction:column;align-items:center;
+  gap:10px;padding:8px 20px 32px;
+  position:relative;z-index:2;width:100%;
+}
 
-/* BOUTON MICRO MAINTIEN */
-.mic-btn{
-  width:80px;height:80px;border-radius:50%;border:none;
-  font-size:2.2rem;cursor:pointer;
+/* GRAND BOUTON PARLER — remplace le micro */
+.talk-btn{
+  width:100px;height:100px;border-radius:50%;border:none;
+  font-size:2.8rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:all 0.15s;
   user-select:none;-webkit-user-select:none;
-  touch-action:none;
+  touch-action:manipulation;
+  position:relative;
 }
-.mic-btn.idle{background:#444;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
-.mic-btn.listening{background:#ef4444;animation:micPulse 1s ease-in-out infinite;box-shadow:0 4px 24px rgba(239,68,68,0.6);}
-.mic-btn.disabled{background:#222;opacity:0.4;}
-.mic-btn:active{transform:scale(0.92);}
+.talk-btn.idle{
+  background:linear-gradient(145deg,#3b82f6,#1d4ed8);
+  box-shadow:0 6px 28px rgba(59,130,246,0.55);
+}
+.talk-btn.playing{
+  background:linear-gradient(145deg,#22c55e,#15803d);
+  animation:talkPulse 0.8s ease-in-out infinite;
+}
+.talk-btn.busy{
+  background:#374151;
+  opacity:0.5;
+}
+.talk-btn:active{transform:scale(0.9);}
 
-.mic-label{font-size:0.8rem;color:rgba(255,255,255,0.55);font-weight:700;text-align:center;}
+/* Ondes sonores animées */
+.sound-waves{
+  display:none;
+  gap:4px;align-items:center;justify-content:center;
+  height:30px;
+}
+.sound-waves.visible{display:flex;}
+.wave-bar{
+  width:4px;border-radius:99px;
+  background:currentColor;
+  animation:waveAnim 0.6s ease-in-out infinite;
+}
+.wave-bar:nth-child(1){animation-delay:0s;   height:8px;}
+.wave-bar:nth-child(2){animation-delay:0.1s; height:14px;}
+.wave-bar:nth-child(3){animation-delay:0.2s; height:20px;}
+.wave-bar:nth-child(4){animation-delay:0.1s; height:14px;}
+.wave-bar:nth-child(5){animation-delay:0s;   height:8px;}
+
+.mic-label{font-size:0.85rem;color:rgba(255,255,255,0.6);font-weight:800;text-align:center;letter-spacing:0.3px;}
 .mic-status{font-size:0.82rem;font-weight:800;text-align:center;min-height:22px;padding:0 16px;}
 
 .btn-hangup{background:#ef4444;border:none;color:#fff;padding:13px 36px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(239,68,68,0.5);}
@@ -131,7 +171,7 @@ h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;letter-spacing:1p
   </div>
   <div class="call-btns">
     <button class="btn-circle btn-decline" onclick="declineCall()">📵</button>
-    <button class="btn-circle btn-accept" onclick="acceptCall()">📞</button>
+    <button class="btn-circle btn-accept"  onclick="acceptCall()">📞</button>
   </div>
 </div>
 
@@ -147,41 +187,52 @@ h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#fff;letter-spacing:1p
   <div class="chat-area" id="chatArea"></div>
   <div class="controls">
     <div class="mic-status" id="micStatus" style="color:rgba(255,255,255,0.6)">Le chiot arrive...</div>
- <button class="mic-btn idle" id="micBtn"
-  ontouchstart="startMic(event)" 
-  ontouchend="stopMic(event)"
-  onmousedown="startMic(event)" 
-  onmouseup="stopMic(event)"
-  onmouseleave="stopMic(event)">🎙️</button>
-    <div class="mic-label" id="micLabel">Maintiens pour parler</div>
-    <button class="btn-hangup" id="hangupBtn" onclick="hangup()">📵 Raccrocher</button>
+
+    <!-- Ondes sonores (visibles quand le chiot parle) -->
+    <div class="sound-waves" id="soundWaves" style="color:#22c55e;">
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+    </div>
+
+    <!-- BOUTON PRINCIPAL : tape pour que le chiot réponde -->
+    <button class="talk-btn busy" id="talkBtn" onclick="onTalkPress()">🐾</button>
+    <div class="mic-label" id="micLabel">Attends le chiot...</div>
+
+    <button class="btn-hangup" onclick="hangup()">📵 Raccrocher</button>
   </div>
 </div>
 
 <script>
 // ── Données personnages ──────────────────────────────────────────────────────
 const DOGS = {
-  chase:   {name:"Chase",   img:"images/chase.png",color:"#2563eb",role:"Police",   pitch:0.88, rate:1.32, system:`Tu es Chase, chiot policier courageux. Tu parles à une petite fille de 4 ans prénommée "ma chérie". Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle de ta voiture de patrouille. Sois chaleureux et amusant.`},
-  stella:  {name:"Stella",  img:"images/stella.png",color:"#ec4899",role:"Aérienne", pitch:1.15,rate:1.38,system:`Tu es Stella, chienne rose qui vole. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise parfois "Wouf !" Parle du ciel. Sois très douce et joyeuse.`},
-  ruben:   {name:"Ruben",   img:"images/ruben.png",color:"#16a34a",role:"Recyclage",pitch:0.8,rate:1.18, system:`Tu es Ruben, chiot rigolo qui recycle. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Pas de gaspillage !". Sois amusant.`},
-  everest: {name:"Everest", img:"images/everest.png",color:"#7c3aed",role:"Neige",    pitch:1.05,rate:1.10,system:`Tu es Everest, chienne husky de montagne. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" Parle de la neige. Sois calme et douce.`},
-  rocky:   {name:"Rocky",   img:"images/rocky.png",color:"#ea580c",role:"Mécanique",pitch:0.90, rate:1.28,system:`Tu es Rocky, chiot inventeur. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Je peux réparer ça !". Sois malin.`},
-  zuma:    {name:"Zuma",    img:"images/zuma.png",color:"#0891b2",role:"Marine",   pitch:1.20, rate:1.4, system:`Tu es Zuma, chiot qui adore l'eau. Tu parles à une petite fille de 4 ans. Réponds TOUJOURS en français, 1-2 courtes phrases. Utilise "Wouf !" et "Ça déchire !". Sois très joyeux.`}
+  chase:   {name:"Chase",   img:"images/chase.png",   color:"#2563eb", role:"Police",    nbSounds:9},
+  stella:  {name:"Stella",  img:"images/stella.png",  color:"#ec4899", role:"Aérienne",  nbSounds:7},
+  ruben:   {name:"Ruben",   img:"images/ruben.png",   color:"#16a34a", role:"Recyclage", nbSounds:8},
+  everest: {name:"Everest", img:"images/everest.png", color:"#7c3aed", role:"Neige",     nbSounds:7},
+  rocky:   {name:"Rocky",   img:"images/rocky.png",   color:"#ea580c", role:"Mécanique", nbSounds:7},
+  zuma:    {name:"Zuma",    img:"images/zuma.png",    color:"#0891b2", role:"Marine",    nbSounds:8}
+};
+
+// Textes affichés dans les bulles (facultatif — correspond aux MP3)
+const DIALOGUES = {
+  chase:   ["Wouf ! Je suis là !","Tu veux venir en mission ?","Attention ! Je protège la ville !","Super travail !","On part sauver quelqu'un !","Merci, on forme une bonne équipe !","Fais attention !","Atchou ! Je suis allergique aux chats !","La Patpatrouille est prête !"],
+  stella:  ["Wouf ! Je vole dans le ciel !","Regarde les nuages !","Je vois tout d'en haut !","Tu veux voler avec moi ?","Le ciel est très beau !","Tu n'aurais pas vu Ryder ?","Parer au décollage !"],
+  ruben:   ["Wouf ! Pas de gaspillage !","Je recycle les objets !","Regarde ma super poubelle !","On garde la planète propre !","Tu es très forte !","Fais attention à ne pas nous déranger !","Appelle Chase, on va avoir besoin de lui !","Bien joué !"],
+  everest: ["Wouf ! J'adore la neige !","Je glisse sur la montagne !","Il fait froid ici !","On joue dans la neige ?","Je protège mes amis !","Allons sauver les ours polaires !","Fais attention, la glace est fine !"],
+  rocky:   ["Wouf ! Je peux réparer ça !","Regarde mon outil !","Je construis une machine !","Tout fonctionne maintenant !","Super idée !","Tu peux me tenir ça ?","On est tous avec toi !"],
+  zuma:    ["Wouf ! J'adore l'eau !","Je nage très vite !","On va sauver quelqu'un !","Splash !","Tu es courageuse !","Vite ! Monte sur mon aéro-glisseur !","Bien joué !","Rip rip wouf !"]
 };
 
 // ── État global ──────────────────────────────────────────────────────────────
-let currentDog = null;
-let history    = [];
-let isSpeaking = false;   // le chiot est en train de parler → micro bloqué
-let isBusy     = false;   // l'IA réfléchit → micro bloqué
-let recognition = null;
+let currentDog   = null;
+let currentDogId = null;
+let isBusy       = false;   // true pendant qu'un MP3 joue
+let currentAudio = null;
 let ringtoneInterval = null, audioCtx = null;
-
-// APIs disponibles
-const synth = (typeof speechSynthesis !== 'undefined') ? speechSynthesis : null;
-const SR    = (typeof SpeechRecognition !== 'undefined') ? SpeechRecognition
-            : (typeof webkitSpeechRecognition !== 'undefined') ? webkitSpeechRecognition
-            : null;
+let usedIndices  = [];      // pour ne pas répéter les sons
 
 // ── Fond pattes ──────────────────────────────────────────────────────────────
 (function(){
@@ -205,7 +256,9 @@ const SR    = (typeof SpeechRecognition !== 'undefined') ? SpeechRecognition
     const btn = document.createElement('button');
     btn.className = 'dog-card';
     btn.innerHTML = `
-      <div class="dog-avatar" style="background:${dog.color};box-shadow:0 8px 24px ${dog.color}66"><img src="${dog.img}" style="width:100%;height:100%;border-radius:50%;"></div>
+      <div class="dog-avatar" style="background:${dog.color};box-shadow:0 8px 24px ${dog.color}66">
+        <img src="${dog.img}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+      </div>
       <div class="dog-name">${dog.name}</div>
       <div class="dog-role">${dog.role}</div>`;
     btn.onclick = ()=>startIncoming(id);
@@ -243,13 +296,14 @@ function showScreen(id){
 }
 
 function startIncoming(dogId){
-  currentDog = DOGS[dogId]; history=[];
-  document.getElementById('incName').textContent=currentDog.name;
-  const av=document.getElementById('incAvatar');
-  av.innerHTML =
- `<img src="${currentDog.img}" 
- style="width:100%;height:100%;border-radius:50%;">`; av.style.background=currentDog.color;
-  av.style.boxShadow=`0 0 60px ${currentDog.color}99`;
+  currentDogId = dogId;
+  currentDog   = DOGS[dogId];
+  usedIndices  = [];
+  document.getElementById('incName').textContent = currentDog.name;
+  const av = document.getElementById('incAvatar');
+  av.innerHTML = `<img src="${currentDog.img}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  av.style.background  = currentDog.color;
+  av.style.boxShadow   = `0 0 60px ${currentDog.color}99`;
   ['ripple1','ripple2','ripple3'].forEach(id=>document.getElementById(id).style.background=currentDog.color);
   document.getElementById('incBg').style.background=`linear-gradient(180deg,#0f0f1a,${currentDog.color}22,#0f0f1a)`;
   showScreen('screen-incoming');
@@ -258,351 +312,147 @@ function startIncoming(dogId){
 
 function declineCall(){
   stopRingtone();
+  stopAudio();
   showScreen('screen-select');
 }
 
 function acceptCall(){
   stopRingtone();
-  isSpeaking=false; isBusy=false;
-  const sm=document.getElementById('callAvatarSm');
-  sm.innerHTML =
- `<img src="${currentDog.img}" 
- style="width:100%;height:100%;border-radius:50%;">`; sm.style.background=currentDog.color;
-  document.getElementById('callName').textContent=currentDog.name;
+  isBusy = false;
+
+  const sm = document.getElementById('callAvatarSm');
+  sm.innerHTML = `<img src="${currentDog.img}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  sm.style.background = currentDog.color;
+  document.getElementById('callName').textContent = currentDog.name;
   document.getElementById('screen-call').style.background=`linear-gradient(160deg,#0f0f1a,${currentDog.color}20,#0f0f1a)`;
-  document.getElementById('chatArea').innerHTML='';
-  setMicUI('disabled');
+  document.getElementById('chatArea').innerHTML = '';
+
+  setTalkUI('busy');
+  setStatus('Le chiot arrive…');
   showScreen('screen-call');
 
- const dogId =
-  Object.keys(DOGS)
-    .find(key => DOGS[key] === currentDog);
-
-const greetingFile =
-  `sounds/${dogId}/${dogId}_0.mp3`;
-
-const greetingAudio =
-  new Audio(greetingFile);
-
-greetingAudio.onended = ()=>{
-  setMicUI('idle');
-  setStatus('👆 Maintiens le bouton pour parler');
-};
-
-greetingAudio.play();
-  
+  // Message d'accueil (_0.mp3)
+  playSound(`sounds/${currentDogId}/${currentDogId}_0.mp3`, null, ()=>{
+    setTalkUI('idle');
+    setStatus('Tape le bouton pour parler !');
+  });
 }
 
 function hangup(){
-  // Arrêt complet propre
-  stopRecognition();
-  cancelSpeech();
-  isSpeaking=false; isBusy=false; history=[];
+  stopAudio();
+  isBusy = false;
+  currentDog   = null;
+  currentDogId = null;
+  usedIndices  = [];
   showScreen('screen-select');
 }
 
-// ── Chat ─────────────────────────────────────────────────────────────────────
-function addBubble(text,who){
-  const chat=document.getElementById('chatArea');
-  const b=document.createElement('div');
-  b.className='bubble bubble-'+who;
-  if(who==='dog') b.style.background=currentDog.color;
-  b.textContent=text;
-  chat.appendChild(b);
-  chat.scrollTop=chat.scrollHeight;
-}
-function showTyping(){
-  removeTyping();
-  const chat=document.getElementById('chatArea');
-  const t=document.createElement('div');
-  t.className='typing-bubble'; t.id='typingBubble'; t.style.background=currentDog.color;
-  t.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-  chat.appendChild(t); chat.scrollTop=chat.scrollHeight;
-}
-function removeTyping(){ const t=document.getElementById('typingBubble'); if(t)t.remove(); }
+// ── Bouton principal ─────────────────────────────────────────────────────────
+function onTalkPress(){
+  if(isBusy) return;
 
-// ── Voix ─────────────────────────────────────────────────────────────────────
-function cancelSpeech(){
-  if(synth){ try{ synth.cancel(); }catch(e){} }
-}
+  // Choisir un index non encore utilisé
+  const total = currentDog.nbSounds; // 1..nbSounds
+  let available = [];
+  for(let i=1;i<=total;i++) if(!usedIndices.includes(i)) available.push(i);
+  if(available.length === 0){ usedIndices=[]; for(let i=1;i<=total;i++) available.push(i); }
+  const idx = available[Math.floor(Math.random()*available.length)];
+  usedIndices.push(idx);
 
-function speakThen(text, callback){
-  isSpeaking=true;
-  cancelSpeech();
-  if(!synth){
-    // Pas de synthèse — on simule un délai puis on continue
-    setTimeout(()=>{ isSpeaking=false; if(callback)callback(); }, 1200);
-    return;
-  }
-  try{
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang='fr-FR'; utter.pitch=currentDog.pitch; utter.rate=currentDog.rate; utter.volume=1;
-    try{
-      const voices=synth.getVoices().filter(v=>v.lang.startsWith('fr'));
-      if(voices.length) utter.voice=voices[0];
-    }catch(e){}
-    utter.onend  = ()=>{ isSpeaking=false; if(callback)callback(); };
-    utter.onerror= ()=>{ isSpeaking=false; if(callback)callback(); };
-    synth.speak(utter);
-  }catch(e){
-    isSpeaking=false; if(callback)callback();
-  }
+  // Afficher la bulle texte correspondante
+  const dialogues = DIALOGUES[currentDogId] || [];
+  const text = dialogues[idx-1] || '…';
+  addBubble(text, 'dog');
+
+  // Jouer le MP3
+  setTalkUI('playing');
+  setStatus(currentDog.name + ' parle…');
+  playSound(`sounds/${currentDogId}/${currentDogId}_${idx}.mp3`, null, ()=>{
+    setTalkUI('idle');
+    setStatus('Tape le bouton pour parler !');
+  });
 }
 
-// ── IA ───────────────────────────────────────────────────────────────────────
-// ── Dialogues prédéterminés enfants ─────────────────────
-const SOUND_FILES = {
-
-  chase: [
-    "sounds/chase/chase_1.mp3",
-    "sounds/chase/chase_2.mp3",
-    "sounds/chase/chase_3.mp3",
-    "sounds/chase/chase_4.mp3",
-    "sounds/chase/chase_5.mp3",
-    "sounds/chase/chase_6.mp3",
-    "sounds/chase/chase_7.mp3",
-    "sounds/chase/chase_8.mp3",
-    "sounds/chase/chase_9.mp3"
-  ],
-
-  stella: [
-    "sounds/stella/stella_1.mp3",
-    "sounds/stella/stella_2.mp3",
-    "sounds/stella/stella_3.mp3",
-    "sounds/stella/stella_4.mp3",
-    "sounds/stella/stella_5.mp3",
-    "sounds/stella/stella_6.mp3",
-    "sounds/stella/stella_7.mp3"
-  ],
-
-  ruben: [
-    "sounds/ruben/ruben_1.mp3",
-    "sounds/ruben/ruben_2.mp3",
-    "sounds/ruben/ruben_3.mp3",
-    "sounds/ruben/ruben_4.mp3",
-    "sounds/ruben/ruben_5.mp3",
-    "sounds/ruben/ruben_6.mp3",
-    "sounds/ruben/ruben_7.mp3",
-    "sounds/ruben/ruben_8.mp3"
-  ],
-
-  everest: [
-    "sounds/everest/everest_1.mp3",
-    "sounds/everest/everest_2.mp3",
-    "sounds/everest/everest_3.mp3",
-    "sounds/everest/everest_4.mp3",
-    "sounds/everest/everest_5.mp3",
-    "sounds/everest/everest_6.mp3",
-    "sounds/everest/everest_7.mp3"
-  ],
-
-  rocky: [
-    "sounds/rocky/rocky_1.mp3",
-    "sounds/rocky/rocky_2.mp3",
-    "sounds/rocky/rocky_3.mp3",
-    "sounds/rocky/rocky_4.mp3",
-    "sounds/rocky/rocky_5.mp3",
-    "sounds/rocky/rocky_6.mp3",
-    "sounds/rocky/rocky_7.mp3"
-  ],
-
-  zuma: [
-    "sounds/zuma/zuma_1.mp3",
-    "sounds/zuma/zuma_2.mp3",
-    "sounds/zuma/zuma_3.mp3",
-    "sounds/zuma/zuma_4.mp3",
-    "sounds/zuma/zuma_5.mp3",
-    "sounds/zuma/zuma_6.mp3",
-    "sounds/zuma/zuma_7.mp3",
-    "sounds/zuma/zuma_8.mp3"
-  ]
-
-};
-const DIALOGUES = {
-
-  chase: [
-    "Wouf ! Je suis Chase ! Je roule avec ma voiture de police ! ",
-    "Tu veux venir en mission avec moi ?",
-    "Attention ! Je protège la ville !",
-    "Super travail mon amie !",
-    "On part sauver quelqu’un ! Wouf !",
-    "Merci on forme une bonne équipe",
-    "Fais Attention",
-    "Atchou ! Je suis allergique aux chats"
-  ],
-
-  stella: [
-    "Wouf ! Je vole dans le ciel ! ",
-    "Regarde les nuages !",
-    "Je vois tout d'en haut !",
-    "Tu veux voler avec moi ?",
-    "Le ciel est très beau aujourd'hui !",
-    "Tu n'aurais pas vu Ryder ?",
-    "Parer au décollage",
-    "Je compte sur toi"
-  ],
-
-  ruben: [
-    "Wouf ! Pas de gaspillage ! ",
-    "Je recycle les objets !",
-    "Regarde ma super poubelle !",
-    "On garde la planète propre !",
-    "Tu es très forte !",
-    "Lucia, tu peux faire attention que personne ne noys dérange",
-    "Appel Chase on va avoir besoin de son drone"
-  ],
-
- everest: [
-    "Wouf ! J'adore la neige ! ",
-    "Je glisse sur la montagne !",
-    "Il fait froid ici !",
-    "On joue dans la neige ?",
-    "Je protège mes amis !",
-    "Allons sauver les ours polaires",
-    "Fais attention ou tu marches la glace est fine"
-  ],
-
-  rocky: [
-    "Wouf ! Je peux réparer ça !",
-    "Regarde mon outil !",
-    "Je construis une machine !",
-    "Tout fonctionne maintenant !",
-    "Super idée !",
-    "Tu peux me tenir ça pendant que je repars ceci ?",
-    "On est tous avec toi"
-  ],
-
-  zuma: [
-    "Wouf ! J'adore l'eau ! ",
-    "Je nage très vite !",
-    "On va sauver quelqu’un dans la mer !",
-    "Splash !",
-    "Tu es courageuse !",
-    "Vite ! Monte sur mon aéro-glisseur ",
-    "Bien joué Lucia"
-  ]
-
-};
-function askDog(userText){
-
+// ── Audio ────────────────────────────────────────────────────────────────────
+function playSound(file, bubbleText, onEnd){
+  stopAudio();
   isBusy = true;
-  setMicUI('disabled');
+  setSoundWaves(true);
 
-  showTyping();
-  setStatus(currentDog.name + " pense...");
+  if(bubbleText) addBubble(bubbleText, 'dog');
 
-  setTimeout(()=>{
-
-    removeTyping();
-
-    // Trouver quel chien est actif
-    const dogId =
-      Object.keys(DOGS)
-        .find(key => DOGS[key] === currentDog);
-
-    // Choisir un numéro aléatoire (1 à 9)
-    const number =
-      Math.floor(Math.random()*9)+1;
-
-    // Construire le nom du fichier
-    const file =
-      `sounds/${dogId}/${dogId}_${number}.mp3`;
-
-    // Jouer le son
-    const audio =
-      new Audio(file);
-
-    audio.onended = ()=>{
-      isBusy=false;
-      setMicUI('idle');
-      setStatus('👆 Maintiens le bouton pour parler');
-    };
-
-    audio.play();
-
-  },1000);
-
+  currentAudio = new Audio(file);
+  currentAudio.onended = ()=>{
+    isBusy = false;
+    setSoundWaves(false);
+    currentAudio = null;
+    if(onEnd) onEnd();
+  };
+  currentAudio.onerror = ()=>{
+    isBusy = false;
+    setSoundWaves(false);
+    currentAudio = null;
+    if(onEnd) onEnd();
+  };
+  currentAudio.play().catch(()=>{
+    isBusy = false;
+    setSoundWaves(false);
+    currentAudio = null;
+    if(onEnd) onEnd();
+  });
 }
 
-// ── Micro push-to-talk ───────────────────────────────────────────────────────
-function setStatus(txt){ document.getElementById('micStatus').textContent=txt; }
-
-function setMicUI(state){
-  const btn=document.getElementById('micBtn');
-  const lbl=document.getElementById('micLabel');
-  btn.className='mic-btn '+state;
-  btn.style.background = state==='listening' ? '#ef4444'
-                        : state==='idle'      ? currentDog.color
-                        : '#222';
-  if(state==='listening'){ btn.textContent='🔴'; lbl.textContent='Relâche quand tu as fini'; }
-  else if(state==='idle') { btn.textContent='🎙️'; lbl.textContent='Maintiens pour parler'; }
-  else                    { btn.textContent='🎙️'; lbl.textContent='Attends le chiot...'; }
+function stopAudio(){
+  if(currentAudio){
+    try{ currentAudio.pause(); currentAudio.currentTime=0; }catch(e){}
+    currentAudio = null;
+  }
+  isBusy = false;
+  setSoundWaves(false);
 }
 
-function startMic(e){
-  e.preventDefault();
-  // Bloqué si le chiot parle ou si l'IA réfléchit
-  if(isSpeaking || isBusy) return;
-  if(!SR){ setStatus('⚠️ Micro non disponible sur ce navigateur'); return; }
-  stopRecognition();
-  setMicUI('listening');
-  setStatus('👂 Je t\'écoute...');
-  try{
-    recognition = new SR();
-    recognition.lang='fr-FR';
-    recognition.continuous=false;
-    recognition.interimResults=false;
-    recognition.onresult=(ev)=>{
-      const text=ev.results[0][0].transcript.trim();
-      if(text.length>0){
-        addBubble(text,'user');
-        setMicUI('disabled');
-        askDog(text);
-      }
-    };
-    recognition.onerror=(ev)=>{
-      if(ev.error==='not-allowed'){
-        setStatus('⚠️ Autorise le micro dans les paramètres du navigateur');
-        setMicUI('disabled');
-      } else {
-        setMicUI('idle');
-        setStatus('👆 Maintiens le bouton pour parler');
-      }
-    };
-    recognition.onend=()=>{
-      // Si on a relâché sans résultat
-      if(!isBusy && !isSpeaking){
-        setMicUI('idle');
-        setStatus('👆 Maintiens le bouton pour parler');
-      }
-    };
-    recognition.start();
-  }catch(e){
-    setStatus('⚠️ Micro non disponible');
-    setMicUI('idle');
+// ── UI helpers ───────────────────────────────────────────────────────────────
+function setStatus(txt){
+  document.getElementById('micStatus').textContent = txt;
+}
+
+function setTalkUI(state){
+  const btn = document.getElementById('talkBtn');
+  const lbl = document.getElementById('micLabel');
+  btn.className = 'talk-btn ' + state;
+  if(state === 'idle'){
+    btn.textContent = '🐾';
+    btn.style.background = `linear-gradient(145deg,${currentDog.color},${currentDog.color}bb)`;
+    btn.style.boxShadow  = `0 6px 28px ${currentDog.color}88`;
+    lbl.textContent = 'Tape pour que le chiot parle !';
+  } else if(state === 'playing'){
+    btn.textContent = '🔊';
+    btn.style.background = 'linear-gradient(145deg,#22c55e,#15803d)';
+    btn.style.boxShadow  = '0 6px 28px rgba(34,197,94,0.6)';
+    lbl.textContent = currentDog.name + ' parle…';
+  } else {
+    btn.textContent = '🐾';
+    btn.style.background = '#374151';
+    btn.style.boxShadow  = 'none';
+    lbl.textContent = 'Attends le chiot…';
   }
 }
 
-function stopMic(e){
-  e.preventDefault();
-  stopRecognition();
-  // Si pas encore de réponse en cours, repasse en idle
-  if(!isBusy && !isSpeaking){
-    setMicUI('idle');
-    setStatus('👆 Maintiens le bouton pour parler');
-  }
+function setSoundWaves(visible){
+  const w = document.getElementById('soundWaves');
+  if(visible) w.classList.add('visible');
+  else        w.classList.remove('visible');
 }
 
-function stopRecognition(){
-  if(recognition){
-    try{ recognition.stop(); }catch(e){}
-    try{ recognition.abort(); }catch(e){}
-    recognition=null;
-  }
+function addBubble(text, who){
+  const chat = document.getElementById('chatArea');
+  const b = document.createElement('div');
+  b.className = 'bubble bubble-' + who;
+  if(who==='dog') b.style.background = currentDog.color;
+  b.textContent = text;
+  chat.appendChild(b);
+  chat.scrollTop = chat.scrollHeight;
 }
-
-// Préchargement voix
-if(synth){ try{ synth.onvoiceschanged=()=>synth.getVoices(); synth.getVoices(); }catch(e){} }
 </script>
 </body>
 </html>
