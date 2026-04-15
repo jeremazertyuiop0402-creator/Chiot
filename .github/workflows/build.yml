@@ -5,36 +5,45 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
 
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 18
 
-    - name: Install Capacitor
-      run: |
-        npm install @capacitor/cli @capacitor/core @capacitor/android
+    - name: Install Cordova
+      run: npm install -g cordova
 
-    - name: Create Capacitor project
-      run: |
-        npx cap init chiots.app com.chiots.app --web-dir=.
+    - name: Create Cordova project
+      run: cordova create app com.chiots.app ChiotsApp
 
-    - name: Add Android platform
+    - name: Copy site files
       run: |
-        npx cap add android
+        rm -rf app/www/*
+        cp -r * app/www/
 
-    - name: Copy files
+    - name: Add Android
       run: |
-        npx cap copy
+        cd app
+        cordova platform add android
 
     - name: Build APK
       run: |
+        cd app
+        cordova build android
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: chiots-apk
+        path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk      run: |
         cd android
         ./gradlew assembleDebug
 
