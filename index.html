@@ -587,23 +587,7 @@ function stopMic(e){
     setStatus('👆 Maintiens le bouton pour parler');
   }
 }
-let micActive = false;
 
-function toggleMic(){
-
-  if(micActive){
-
-    stopMic(new Event("stop"));
-    micActive = false;
-
-  }else{
-
-    startMic(new Event("start"));
-    micActive = true;
-
-  }
-
-}
 function stopRecognition(){
   if(recognition){
     try{ recognition.stop(); }catch(e){}
@@ -615,7 +599,6 @@ function stopRecognition(){
 // Préchargement voix
 if(synth){ try{ synth.onvoiceschanged=()=>synth.getVoices(); synth.getVoices(); }catch(e){} }
 // Gestion tactile fiable pour Android APK
-let micActive = false;
 
 document.addEventListener("DOMContentLoaded", ()=>{
 
