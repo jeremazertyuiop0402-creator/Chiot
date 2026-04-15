@@ -5,7 +5,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -13,42 +12,33 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
-
     - name: Install Cordova
-      run: npm install -g cordova
-
-    - name: Create Cordova project
-      run: cordova create app com.chiots.app ChiotsApp
-
-    - name: Copy site files
       run: |
-        rm -rf app/www/*
-        cp -r * app/www/
+        npm install -g cordova
+
+    - name: Create App
+      run: |
+        cordova create myApp com.chiots.app ChiotsApp
+
+    - name: Copy Files
+      run: |
+        rm -rf myApp/www/*
+        cp index.html myApp/www/
+        cp -r images myApp/www/
+        cp -r sounds myApp/www/
 
     - name: Add Android
       run: |
-        cd app
+        cd myApp
         cordova platform add android
 
-    - name: Build APK
+    - name: Build Android
       run: |
-        cd app
+        cd myApp
         cordova build android
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: chiots-apk
-        path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk      run: |
-        cd android
-        ./gradlew assembleDebug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: android/app/build/outputs/apk/debug/app-debug.apk
+        path: myApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
